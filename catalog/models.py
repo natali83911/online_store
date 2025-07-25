@@ -13,6 +13,7 @@ class Product(models.Model):
     image = models.ImageField(
         upload_to="product/image",
         null=True,
+        blank=True,
         verbose_name="Фото продукта",
         help_text="Загрузите фото продукта",
     )
