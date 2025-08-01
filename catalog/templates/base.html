@@ -180,15 +180,36 @@
 {% endblock %}
 </main>
 
-<footer class="text-dark py-5">
-    <div class="container">
-        <p class="float-end mb-1"><a href="#">Back to top</a></p>
-        <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-        <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="/docs/5.3/getting-started/introduction">getting started guide</a>.</p>
-    </div>
-</footer>
-
-
+<footer class="pt-4 my-md-5 pt-md-5 border-top">
+        <div class="row">
+            <div class="col-12 col-md text-dark">
+                Всяко-разно
+                <small class="d-block mb-3 text-black">&copy; 2025</small>
+            </div>
+            <div class="col-6 col-md">
+                <h5 class="fw-bold text-black">Категории</h5>
+                <ul class="list-unstyled text-small">
+                    <li><a class="text-black fs-7" href="#">Рассылки</a></li>
+                    <li><a class="text-black fs-7" href="#">Телеграм боты</a></li>
+                    <li><a class="text-black fs-7" href="#">Полезные утилиты</a></li>
+                    <li><a class="text-black fs-7" href="#">Веб-приложения</a></li>
+                    <li><a class="text-black fs-7" href="#">Микросервисы</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md">
+                <h5 class="fw-bold text-black">Дополнительно</h5>
+                <ul class="list-unstyled text-small">
+                    <li><a class="text-black fs-7" href="#">Мы пишем</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-md">
+                <h5 class="fw-bold text-black">О нас</h5>
+                <ul class="list-unstyled text-small">
+                    <li><a class="text-black fs-7" href="{% url 'catalog:contacts' %}">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
