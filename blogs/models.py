@@ -53,7 +53,8 @@ class BlogPost(models.Model):
             self.published_at = timezone.now()
         elif self.status == 'draft':
             self.published_at = None
-            super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return self.title

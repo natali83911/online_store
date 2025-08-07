@@ -18,8 +18,8 @@ class BlogPostDetailView(DetailView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        obj.views += 1
-        obj.save(update_fields=['views'])
+        obj.views_count += 1
+        obj.save(update_fields=['views_count'])
         return obj
 
 class BlogPostCreateView(CreateView):
