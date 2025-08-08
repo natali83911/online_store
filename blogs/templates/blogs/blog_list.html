@@ -10,11 +10,11 @@
     <div class="row row-cols-1 row-cols-md-2 g-4">
         {% for post in blogs %}
             <div class="col">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100 shadow-sm" style="max-width: 400px; width: 100%;">
                     {% if post.preview %}
-                        <img src="{{ post.preview.url }}" class="card-img-top" alt="Превью {{ post.title }}">
+                        <img src="{{ post.preview.url }}" class="card-img-top" style="max-width: 400px; height: auto;" alt="Превью {{ post.title }}">
                     {% else %}
-                        <img src="{% static 'img/default_preview.jpg' %}" class="card-img-top" alt="Превью отсутствует">
+                        <img src="{% static 'img/default_preview.jpg' %}" class="card-img-top" style="max-width: 400px; height: auto;" alt="Превью отсутствует">
                     {% endif %}
 
                     <div class="card-body d-flex flex-column">

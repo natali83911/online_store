@@ -1,7 +1,7 @@
 {% extends 'blogs/base.html' %}
 {% load static %}
 
-{% block title %}{{ blogs.title }} — Детали записи{% endblock %}
+{% block title %}{{ object.title }} — Детали записи{% endblock %}
 
 {% block content %}
 <article class="mb-4">
@@ -10,16 +10,16 @@
     {% if blog.preview %}
         <img src="{{ blog.preview.url }}" class="img-fluid mb-3" alt="Превью {{ blog.title }}">
     {% else %}
-        <img src="{% static 'img/default_preview.jpg' %}" class="img-fluid mb-3" alt="Превью отсутствует">
+        <img src="{% static 'img/default_preview.jpg' %}" class="img-fluid mb-3" style="max-width: 400px; height: auto;" alt="Превью отсутствует">
     {% endif %}
 
     <p><small class="text-muted">
-        Опубликовано: {{ blog.published_at|date:"d.m.Y H:i" }}<br/>
-        Просмотров: {{ blog.views_count }}
+        Опубликовано: {{ object.published_at|date:"d.m.Y H:i" }}<br/>
+        Просмотров: {{ object.views_count }}
     </small></p>
 
     <div>
-        {{ blog.content|linebreaks }}
+        {{ object.content|linebreaks }}
     </div>
 </article>
 
