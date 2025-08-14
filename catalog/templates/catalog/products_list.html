@@ -1,30 +1,30 @@
 {% extends 'catalog/base.html' %}
 {% load my_tags %}
+
 {% block content %}
 <div class="album py-5">
-        <div class="container">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                {% for product in products %}
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <img src="{{ product.image|media_filter }}" class="card-img-top card-img-fixed"
-                             alt="{{ product.name }}">
-                        <div class="card-body">
-                            <p class="card-text">{{ product.name }}</p>
-                            <p class="card-text">{{ product.description|truncatechars:100 }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href="{% url 'catalog:products_detail' product.pk %}"
-                                       class="btn btn-outline-light">Просмотр товара</a>
-                                </div>
+    <div class="container">
+        <a href="{% url 'catalog:product_add' %}" class="btn btn-success mb-3">Добавить продукт</a>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% for product in products %}
+            <div class="col">
+                <div class="card shadow-sm">
+                    <img src="{{ product.image|media_filter }}" class="card-img-top card-img-fixed" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <p class="card-text">{{ product.name }}</p>
+                        <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a href="{% url 'catalog:products_detail' product.pk %}" class="btn btn-outline-light">Просмотр товара</a>
+                                <a href="{% url 'catalog:product_edit' product.pk %}" class="btn btn-primary btn-sm">Редактировать</a>
+                                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger btn-sm">Удалить</a>
                             </div>
                         </div>
                     </div>
-
                 </div>
-                {% endfor %}
-
             </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 {% endblock %}
