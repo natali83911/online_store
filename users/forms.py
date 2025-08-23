@@ -1,10 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+
 from .models import CustomUser
 
-class CustomUserRegisterForm(UserCreationForm):
+
+class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
-        fields = ('email', 'password1', 'password2')
+        fields = ("email", "password1", "password2")
 
-    email = forms.EmailField(label='Email', required=True)
+    email = forms.EmailField(label="Email", required=True)
