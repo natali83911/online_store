@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class Product(models.Model):
     name = models.CharField(
@@ -33,6 +33,23 @@ class Product(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True, verbose_name="Дата последнего изменения продукта"
     )
+    STATUS_CHOICES = [
+        ('draft', 'Черновик'),
+        ('published', 'Опубликован'),
+    ]
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='draft',
+        verbose_name='Статус публикации'
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='products',
+        verbose_name='Владелец продукта'
+    )
 
     def __str__(self):
         return f"{self.name} {self.category}"
@@ -44,6 +61,9 @@ class Product(models.Model):
             "name",
             "category",
             "price",
+        ]
+        permissions = [
+            ('can_unpublish_product', 'Может отменять публикацию продукта'),
         ]
 
 
