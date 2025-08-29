@@ -6,13 +6,14 @@ from django.core.exceptions import PermissionDenied
 
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
+from django.conf import settings
 
 
 class OwnerOrModeratorMixin(UserPassesTestMixin):
     def test_func(self):
         obj = self.get_object()
         user = self.request.user
-        if user.groups.filter(name='Модератор продуктов').exists() and user.has_perm('catalog.can_unpublish_product'):
+        if user.groups.filter(name=settings.MODERATOR_GROUP_NAME).exists() and user.has_perm('catalog.can_unpublish_product'):
             return True
 
         return obj.owner == user
@@ -63,13 +64,13 @@ class ProductUpdateView(LoginRequiredMixin, OwnerOrModeratorMixin, UpdateView):
         obj = self.get_object()
         if obj.owner == user:
             return ProductForm
-        if user.groups.filter(name='Модератор продуктов').exists():
+        if user.groups.filter(name=settings.MODERATOR_GROUP_NAME).exists():
             return ProductModeratorForm
         return PermissionDenied
 
     def get_queryset(self):
         user = self.request.user
-        if user.groups.filter(name='Модератор продуктов').exists():
+        if user.groups.filter(name=settings.MODERATOR_GROUP_NAME).exists():
             return Product.objects.all()
         return Product.objects.filter(owner=user)
 
@@ -81,6 +82,6 @@ class ProductDeleteView(LoginRequiredMixin, OwnerOrModeratorMixin, DeleteView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.groups.filter(name='Модератор продуктов').exists():
+        if user.groups.filter(name=settings.MODERATOR_GROUP_NAME).exists():
             return Product.objects.all()
         return Product.objects.filter(owner=user)
