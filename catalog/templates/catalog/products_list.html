@@ -19,8 +19,10 @@
                             <div class="btn-group">
                                 <a href="{% url 'catalog:products_detail' product.pk %}" class="btn btn-outline-light">Просмотр товара</a>
                                 {% if user.is_authenticated %}
+                                {% if perms.catalog.can_unpublish_product or user == product.owner %}
                                 <a href="{% url 'catalog:product_edit' product.pk %}" class="btn btn-primary btn-sm">Редактировать</a>
                                 <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </div>

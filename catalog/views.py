@@ -1,10 +1,24 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
+from django.core.exceptions import PermissionDenied
 
-from catalog.forms import ProductForm
+from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
+
+
+class OwnerOrModeratorMixin(UserPassesTestMixin):
+    def test_func(self):
+        obj = self.get_object()
+        user = self.request.user
+        if user.groups.filter(name='Модератор продуктов').exists() and user.has_perm('catalog.can_unpublish_product'):
+            return True
+
+        return obj.owner == user
+
+    def handle_no_permission(self):
+        raise PermissionDenied
 
 
 class HomeView(TemplateView):
@@ -33,15 +47,40 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:products_list")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+
+class ProductUpdateView(LoginRequiredMixin, OwnerOrModeratorMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:products_list")
 
+    def get_form_class(self):
+        user = self.request.user
+        obj = self.get_object()
+        if obj.owner == user:
+            return ProductForm
+        if user.groups.filter(name='Модератор продуктов').exists():
+            return ProductModeratorForm
+        return PermissionDenied
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name='Модератор продуктов').exists():
+            return Product.objects.all()
+        return Product.objects.filter(owner=user)
+
+
+class ProductDeleteView(LoginRequiredMixin, OwnerOrModeratorMixin, DeleteView):
     model = Product
     template_name = "catalog/product_confirm_delete.html"
     success_url = reverse_lazy("catalog:products_list")
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(name='Модератор продуктов').exists():
+            return Product.objects.all()
+        return Product.objects.filter(owner=user)
