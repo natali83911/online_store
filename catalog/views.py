@@ -1,12 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from django.core.cache import cache
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
 from django.core.exceptions import PermissionDenied
 
 from catalog.forms import ProductForm, ProductModeratorForm
-from catalog.models import Product
+from catalog.models import Product, Category
 from django.conf import settings
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+
+from catalog.services import get_products_by_category, get_products_from_cache
 
 
 class OwnerOrModeratorMixin(UserPassesTestMixin):
@@ -35,7 +40,22 @@ class ProductsListView(ListView):
     template_name = "catalog/products_list.html"
     context_object_name = "products"
 
+    def get_queryset(self):
+        category_name = self.request.GET.get('category')
+        if category_name:
+            queryset = Product.objects.filter(category__name__iexact=category_name)
+        else:
+            queryset = get_products_from_cache()
+        return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['selected_category'] = self.request.GET.get('category', '')
+        return context
+
+
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductDetailView(DetailView):
     model = Product
     template_name = "catalog/products_detail.html"
@@ -85,3 +105,18 @@ class ProductDeleteView(LoginRequiredMixin, OwnerOrModeratorMixin, DeleteView):
         if user.groups.filter(name=settings.MODERATOR_GROUP_NAME).exists():
             return Product.objects.all()
         return Product.objects.filter(owner=user)
+
+
+class ProductsByCategoryView(ListView):
+    model = Product
+    template_name = "catalog/products_by_category.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        category = self.kwargs.get('category_name')
+        cache_key = f"products_category_{category}"
+        products = cache.get(cache_key)
+        if not products:
+            products = get_products_by_category(category)
+            cache.set(cache_key, products, 60 * 15)
+        return products
