@@ -6,7 +6,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from django.core.exceptions import PermissionDenied
 
 from catalog.forms import ProductForm, ProductModeratorForm
-from catalog.models import Product
+from catalog.models import Product, Category
 from django.conf import settings
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
@@ -41,7 +41,19 @@ class ProductsListView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        return get_products_from_cache()
+        category_name = self.request.GET.get('category')
+        if category_name:
+            queryset = Product.objects.filter(category__name__iexact=category_name)
+        else:
+            queryset = get_products_from_cache()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['selected_category'] = self.request.GET.get('category', '')
+        return context
+
 
 @method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductDetailView(DetailView):
