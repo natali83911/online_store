@@ -1,0 +1,92 @@
+name: Django CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DOCKER_HUB_IMAGE: ${{ secrets.DOCKER_HUB_IMAGE }}
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+  DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+  PROJECT_DIR: /home/natalia/online_store
+
+jobs:
+  flake8:
+    name: Flake8 Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry and dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+          poetry run pip install flake8
+
+      - name: Run Flake8
+        run: poetry run flake8 .
+
+  test:
+    needs: flake8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry and Dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: Run Linters
+        run: poetry run black . --check && poetry run isort . --check
+
+      - name: Run Tests
+        run: poetry run python manage.py test
+
+  build_and_push:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t $DOCKER_HUB_IMAGE:${{ github.sha }} .
+
+      - name: Log in to Docker Hub
+        run: echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+
+      - name: Push Docker image
+        run: docker push $DOCKER_HUB_IMAGE:${{ github.sha }}
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.DEPLOY_HOST }}
+          username: ${{ env.DEPLOY_USER }}
+          key: ${{ env.DEPLOY_KEY }}
+          script: |
+            cd ${{ env.PROJECT_DIR }}
+            docker pull $DOCKER_HUB_IMAGE:${{ github.sha }}
+            docker compose down
+            sed -i "s|image: .*$|image: $DOCKER_HUB_IMAGE:${{ github.sha }}|" docker-compose.yaml
+            docker compose up -d --build
