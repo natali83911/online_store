@@ -29,14 +29,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - .env
 
   redis:
     image: redis:7
     volumes:
       - redis_data:/data
     env_file:
-      - ./.env
+      - .env
 
 volumes:
   postgres_data:
