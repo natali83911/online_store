@@ -1,18 +1,12 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    ListView,
-    TemplateView,
-    UpdateView,
-)
 from django.core.exceptions import PermissionDenied
+from django.urls import reverse_lazy
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  TemplateView, UpdateView)
 
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
-from django.conf import settings
 
 
 class OwnerOrModeratorMixin(UserPassesTestMixin):

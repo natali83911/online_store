@@ -1,6 +1,7 @@
-from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import Product, Category
+from django.test import TestCase
+
+from .models import Category, Product
 
 User = get_user_model()
 
