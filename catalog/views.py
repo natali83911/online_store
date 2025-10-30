@@ -1,7 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  TemplateView, UpdateView)
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 from django.core.exceptions import PermissionDenied
 
 from catalog.forms import ProductForm, ProductModeratorForm
@@ -13,7 +19,9 @@ class OwnerOrModeratorMixin(UserPassesTestMixin):
     def test_func(self):
         obj = self.get_object()
         user = self.request.user
-        if user.groups.filter(name=settings.MODERATOR_GROUP_NAME).exists() and user.has_perm('catalog.can_unpublish_product'):
+        if user.groups.filter(
+            name=settings.MODERATOR_GROUP_NAME
+        ).exists() and user.has_perm("catalog.can_unpublish_product"):
             return True
 
         return obj.owner == user

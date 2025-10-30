@@ -4,6 +4,7 @@ from .models import Product, Category
 
 User = get_user_model()
 
+
 class ProductModelTests(TestCase):
     def setUp(self):
         # Создаём пользователя напрямую
@@ -16,8 +17,7 @@ class ProductModelTests(TestCase):
 
         # Создаём категорию
         self.category = Category.objects.create(
-            name="Категория 1",
-            description="Описание"
+            name="Категория 1", description="Описание"
         )
 
         # Создаём продукт
@@ -26,7 +26,7 @@ class ProductModelTests(TestCase):
             description="Описание продукта",
             category=self.category,
             price=100,
-            status='draft',
+            status="draft",
             owner=self.user,
         )
 

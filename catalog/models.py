@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Product(models.Model):
     name = models.CharField(
         max_length=150,
@@ -34,21 +35,21 @@ class Product(models.Model):
         auto_now=True, verbose_name="Дата последнего изменения продукта"
     )
     STATUS_CHOICES = [
-        ('draft', 'Черновик'),
-        ('published', 'Опубликован'),
+        ("draft", "Черновик"),
+        ("published", "Опубликован"),
     ]
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default='draft',
-        verbose_name='Статус публикации'
+        default="draft",
+        verbose_name="Статус публикации",
     )
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='products',
-        verbose_name='Владелец продукта'
+        related_name="products",
+        verbose_name="Владелец продукта",
     )
 
     def __str__(self):
@@ -63,7 +64,7 @@ class Product(models.Model):
             "price",
         ]
         permissions = [
-            ('can_unpublish_product', 'Может отменять публикацию продукта'),
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
         ]
 
 

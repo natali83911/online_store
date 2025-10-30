@@ -72,5 +72,4 @@ class ProductForm(forms.ModelForm):
 class ProductModeratorForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['status']
-
+        fields = ["status"]

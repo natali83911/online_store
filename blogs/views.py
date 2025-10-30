@@ -1,7 +1,12 @@
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 
 from .models import BlogPost
 
